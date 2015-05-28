@@ -3,7 +3,9 @@
 const
 	octets = require('../types/octets'),
 	IdentifierOctet = octets.IdentifierOctet,
-	LengthOctet = octets.LengthOctet;
+	LengthOctet = octets.LengthOctet,
+	Tag = require('../types/tag'),
+	decoders = require('./tagdecoders');
 
 function Decoder(data) {
 	if (!data || !Buffer.isBuffer(data)) {
@@ -19,23 +21,31 @@ Decoder.prototype.decode = function() {
 
 Decoder.prototype._reset = function() {
 	this._offset = 0;
+};
+
+Decoder.prototype._isOutOfLimits = function() {
+	return this._offset >= this._buffer.length;
 }
 
 Decoder.prototype._peekOctet = function() {
 	return this._buffer[this._offset];
-}
+};
 
 Decoder.prototype._readOctet = function() {
 	let octet = this._peekOctet();
 	this._offset++;
 	return octet;
-}
+};
 
 Decoder.prototype._processOctet = function() {
 	let
-		identifierOctet = this._processIdentifier(),
-		lengthOctet = this._processLength(),
-		length = 0;
+		tagOffset = this._offset,
+		identifierOctet, lengthOctet,
+		length = 0, lengthLeft = 0,
+		value, childTag;
+
+	identifierOctet = this._processIdentifier();
+	lengthOctet = this._processLength();
 
 	if (lengthOctet.isShortForm()) {
 		length = lengthOctet.lengthValue;
@@ -43,20 +53,44 @@ Decoder.prototype._processOctet = function() {
 		length = this._readBytesAsInt(lengthOctet.lengthValue);
 	}
 
-	return new Tag(identifierOctet, lengthOctet, length, this._processOctet());
-}
+	lengthLeft = length;
+	
+	if (identifierOctet.isConstructed()) {
+		value = [];
+
+		while (lengthLeft > 0) {
+			childTag = this._processOctet();
+			value.push(childTag);
+			lengthLeft -= childTag.length;
+		}
+	} else {
+		value = this._processValue(identifierOctet, lengthLeft);
+	}
+
+	return new Tag(identifierOctet, lengthOctet, length, tagOffset, value);
+};
 
 Decoder.prototype._processIdentifier = function() {
 	return new IdentifierOctet(this._readOctet());
-}
+};
 
 Decoder.prototype._processLength = function() {
 	return new LengthOctet(this._readOctet());
-}
+};
+
+Decoder.prototype._processValue = function(identifierOctet, length) {
+	if (length > 0) {
+		try {
+			return decoders.parse(identifierOctet.tagNumber, this._readBytesAsBuffer(length));
+		} catch (ex) {
+			throw ex;
+		}
+	}
+};
 
 Decoder.prototype._readBytesAsInt = function(nBytes) {
 	if (!nBytes || typeof nBytes != 'number' || nBytes < 0) {
-		throw new TypeError('Argument must be a valid number greater than 0.');
+		throw new TypeError('Argument must be a valid number greater than 0. Offset: ' + this._offset);
 	}
 
 	let value = 0;
@@ -66,6 +100,17 @@ Decoder.prototype._readBytesAsInt = function(nBytes) {
 	}
 
 	return value;
-}
+};
+
+Decoder.prototype._readBytesAsBuffer = function(nBytes) {
+	if (!nBytes || typeof nBytes != 'number' || nBytes < 0) {
+		throw new TypeError('Argument must be a valid number greater than 0. Offset: ' + this._offset);
+	}
+
+	let buffer = this._buffer.slice(this._offset, this._offset + nBytes);
+	this._offset += nBytes;
+
+	return buffer;
+};
 
 module.exports = Decoder;

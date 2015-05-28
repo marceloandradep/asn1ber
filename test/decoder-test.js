@@ -5,18 +5,16 @@ const
 	log = require('bunyan').createLogger({ name: 'decoder-test' }),
 	Decoder = require('../decoder/decoder');
 
-let decoder = new Decoder(new Buffer([0x7f, 0x60, 0xa1]));
-decoder._reset();
-console.log(decoder._readBytesAsInt(3));
-
-/*fs.readFile("response-node.txt", function(err, data) {
+fs.readFile("response-node.txt", function(err, data) {
 	if (err) {
 		throw err;
 	}
+
+	//var data = new Buffer([0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00]);
 
 	let 
 		decoder = new Decoder(data),
 		asn1 = decoder.decode();
 
 	log.info({ asn1: asn1 });
-});*/
+});

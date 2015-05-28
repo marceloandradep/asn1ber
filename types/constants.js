@@ -43,10 +43,10 @@ module.exports = {
 	VisibleString: 26,
 	GeneralString: 27,
 	UniversalString: 28,
-	CharecterString: 29,
+	CharacterString: 29,
 	BMPString: 30,
 
 	// Length forms
-	ShortForm: 0x0,
-	LongForm: 0x1
+	ShortForm: 0x00,
+	LongForm: 0x80
 };
