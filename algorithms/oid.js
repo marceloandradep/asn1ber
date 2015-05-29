@@ -1,6 +1,6 @@
 'use strict';
 
-exports.decode = function(bytes) {
+exports.decode = function(bytes, Decoder) {
 	let
 		nodes = [],
 		value = 0;

@@ -227,8 +227,8 @@ const
 		}
 	];
 
-exports.parse = function(type, bytes) {
-	return types[type].parse(bytes);
+exports.parse = function(type, bytes, Decoder) {
+	return types[type].parse(bytes, Decoder);
 };
 
 exports.types = types;

@@ -1,11 +1,20 @@
 'use strict';
 
-exports.decode = function(bytes) {
-	let stringOctet = '';
+const
+	S = require('string');
 
-	for (let offset = 0; offset < bytes.length; offset++) {
-		stringOctet += bytes[offset].toString(16);
+exports.decode = function(bytes, Decoder) {
+	let decoder = new Decoder(bytes);
+
+	if (decoder.isValid()) {
+		return decoder.decode();
+	} else {
+		let stringOctet = '';
+
+		for (let offset = 0; offset < bytes.length; offset++) {
+			stringOctet += S(bytes[offset].toString(16).toUpperCase()).padLeft(2, '0');
+		}
+
+		return stringOctet;
 	}
-
-	return stringOctet;
-}
+};

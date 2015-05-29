@@ -7,12 +7,30 @@ const
 	Tag = require('../types/tag'),
 	decoders = require('./tagdecoders');
 
-function Decoder(data) {
+function Decoder(data, parentOffset) {
 	if (!data || !Buffer.isBuffer(data)) {
 		throw new TypeError('Data must be a buffer.');
 	}
 	this._buffer = data;
+	this._parentOffset = ( parentOffset ? parentOffset : 0 );
 }
+
+Decoder.prototype.isValid = function() {
+	this._reset();
+
+	let
+		identifierOctet = this._processIdentifier(), 
+		lengthOctet = this._processLength(), 
+		totalLength = 2, length;
+
+	if (lengthOctet.isShortForm()) {
+		totalLength += lengthOctet.lengthValue;
+	} else {
+		totalLength += lengthOctet.lengthValue + this._readBytesAsInt(lengthOctet.lengthValue);
+	}
+
+	return (identifierOctet.isUniversal() && totalLength == this._buffer.length);
+};
 
 Decoder.prototype.decode = function() {
 	this._reset();
@@ -67,7 +85,7 @@ Decoder.prototype._processOctet = function() {
 		value = this._processValue(identifierOctet, lengthLeft);
 	}
 
-	return new Tag(identifierOctet, lengthOctet, length, tagOffset, value);
+	return new Tag(identifierOctet, lengthOctet, length, tagOffset + this._parentOffset, value);
 };
 
 Decoder.prototype._processIdentifier = function() {
@@ -81,7 +99,7 @@ Decoder.prototype._processLength = function() {
 Decoder.prototype._processValue = function(identifierOctet, length) {
 	if (length > 0) {
 		try {
-			return decoders.parse(identifierOctet.tagNumber, this._readBytesAsBuffer(length));
+			return decoders.parse(identifierOctet.tagNumber, this._readBytesAsBuffer(length), Decoder);
 		} catch (ex) {
 			throw ex;
 		}
