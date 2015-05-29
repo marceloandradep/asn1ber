@@ -99,7 +99,7 @@ Decoder.prototype._processLength = function() {
 Decoder.prototype._processValue = function(identifierOctet, length) {
 	if (length > 0) {
 		try {
-			return decoders.parse(identifierOctet.tagNumber, this._readBytesAsBuffer(length), Decoder);
+			return decoders.parse(identifierOctet, this._offset, this._readBytesAsBuffer(length), Decoder);
 		} catch (ex) {
 			throw ex;
 		}

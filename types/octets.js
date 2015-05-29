@@ -8,13 +8,12 @@ const
 /**
  * Octet implementation
  */
-function Octet(byte, offset) {
+function Octet(byte) {
 	if (typeof byte != 'number') {
 		throw new TypeError('Argument must be a number.');
 	}
 
 	this._byte = byte;
-	this.offset = offset;
 };
 
 Octet.prototype.readBits = function(mask) {
@@ -28,8 +27,8 @@ Octet.prototype.readBits = function(mask) {
 /**
  * Identifier Octet implementation
  */
-function IdentifierOctet(byte, offset) {
-	Octet.call(this, byte, offset);
+function IdentifierOctet(byte) {
+	Octet.call(this, byte);
 
 	this.tagClass = this.readBits(masks.tagClass);
 	this.tagForm = this.readBits(masks.tagForm);
@@ -53,8 +52,8 @@ IdentifierOctet.prototype.isUniversal = function() {
 /**
  * Length Octet implementation
  */
-function LengthOctet(byte, offset) {
-	Octet.call(this, byte, offset);
+function LengthOctet(byte) {
+	Octet.call(this, byte);
 
 	this.lengthForm = this.readBits(masks.lengthFormFlag);
 	this.lengthValue = this.readBits(masks.lengthValueBits);

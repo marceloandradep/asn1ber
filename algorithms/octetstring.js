@@ -3,8 +3,8 @@
 const
 	S = require('string');
 
-exports.decode = function(bytes, Decoder) {
-	let decoder = new Decoder(bytes);
+exports.decode = function(bytes, parentOffset, Decoder) {
+	let decoder = new Decoder(bytes, parentOffset);
 
 	if (decoder.isValid()) {
 		return decoder.decode();

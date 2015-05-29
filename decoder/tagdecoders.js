@@ -36,9 +36,7 @@ const
 		{
 			code: 3,
 			description: 'Bit String',
-			parse: function(bytes) {
-				return 'Not implemented';
-			}
+			parse: require('../algorithms/bitstring').decode
 		},
 		{
 			code: 4,
@@ -47,10 +45,7 @@ const
 		},
 		{
 			code: 5,
-			description: 'Null',
-			parse: function(bytes) {
-				return 'Not implemented';
-			}
+			description: 'Null'
 		},
 		{
 			code: 6,
@@ -108,31 +103,19 @@ const
 		},
 		{
 			code: 14,
-			description: 'Reserved',
-			parse: function(bytes) {
-				return 'Not implemented';
-			}
+			description: 'Reserved'
 		},
 		{
 			code: 15,
-			description: 'Reserved',
-			parse: function(bytes) {
-				return 'Not implemented';
-			}
+			description: 'Reserved'
 		},
 		{
 			code: 16,
-			description: 'Sequence',
-			parse: function(bytes) {
-				return 'Not implemented';
-			}
+			description: 'Sequence'
 		},
 		{
 			code: 17,
-			description: 'Set',
-			parse: function(bytes) {
-				return 'Not implemented';
-			}
+			description: 'Set'
 		},
 		{
 			code: 18,
@@ -145,7 +128,7 @@ const
 			code: 19,
 			description: 'Printable String',
 			parse: function(bytes) {
-				return 'Not implemented';
+				return bytes.toString('ascii');
 			}
 		},
 		{
@@ -172,16 +155,12 @@ const
 		{
 			code: 23,
 			description: 'UTCTime',
-			parse: function(bytes) {
-				return 'Not implemented';
-			}
+			parse: require('../algorithms/utctime').decode
 		},
 		{
 			code: 24,
 			description: 'Generalized Time',
-			parse: function(bytes) {
-				return 'Not implemented';
-			}
+			parse: require('../algorithms/generalizedtime').decode
 		},
 		{
 			code: 25,
@@ -227,8 +206,12 @@ const
 		}
 	];
 
-exports.parse = function(type, bytes, Decoder) {
-	return types[type].parse(bytes, Decoder);
+exports.parse = function(identifierOctet, parentOffset, bytes, Decoder) {
+	if (identifierOctet.isUniversal()) {
+		return types[identifierOctet.tagNumber].parse(bytes, parentOffset, Decoder);
+	} else {
+		return bytes.toString('ascii');
+	}
 };
 
 exports.types = types;
