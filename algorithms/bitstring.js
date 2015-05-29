@@ -1,19 +1,14 @@
 'use strict';
 
 exports.decode = function(bytes, parentOffset, Decoder) {
-	if (bytes[0] == 0) {
-		bytes = bytes.slice(1, bytes.length);
-		parentOffset++;
+	let 
+		content = bytes.slice(1, bytes.length),
+		decoder = new Decoder(content, parentOffset + 1);
 
-		let decoder = new Decoder(bytes, parentOffset);
-
-		if (decoder.isValid()) {
-			return decoder.decode();
-		} else {
-			return bytes;
-		}
+	if (decoder.isValid()) {
+		return decoder.decode();
 	} else {
-		let bitString = '';
+		let bitString = 'pows';
 
 		for (let b in bytes) {
 			for (let bit = 0x80; bit > 0x00; bit >>= 1) {
@@ -23,6 +18,8 @@ exports.decode = function(bytes, parentOffset, Decoder) {
 					bitString += '0';
 				}
 			}
+
+			bitString += ',';
 		}
 
 		return bitString;

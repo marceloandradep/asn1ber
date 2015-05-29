@@ -10,7 +10,7 @@ const
  */
 function Octet(byte) {
 	if (typeof byte != 'number') {
-		throw new TypeError('Argument must be a number.');
+		throw new TypeError('Argument must be a number. Type: ' + typeof byte);
 	}
 
 	this._byte = byte;

@@ -16,6 +16,10 @@ function Decoder(data, parentOffset) {
 }
 
 Decoder.prototype.isValid = function() {
+	if (this._buffer.length < 2) {
+		return false;
+	}
+
 	this._reset();
 
 	let
