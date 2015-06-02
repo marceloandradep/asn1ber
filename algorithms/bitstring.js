@@ -8,18 +8,25 @@ exports.decode = function(bytes, parentOffset, Decoder) {
 	if (decoder.isValid()) {
 		return decoder.decode();
 	} else {
-		let bitString = 'pows';
+		let 
+			bitString = '',
+			padding = bytes[0],
+			currentByte = 1, currentBit = 0x80,
+			numBits = (bytes.length - 1) * 8 - padding;
 
-		for (let b in bytes) {
-			for (let bit = 0x80; bit > 0x00; bit >>= 1) {
-				if ((b & bit) == bit) {
-					bitString += '1';
-				} else {
-					bitString += '0';
-				}
+		for (let i = 0; i < numBits; i++) {
+			if ((bytes[currentByte] & currentBit) == currentBit) {
+				bitString += '1';
+			} else {
+				bitString += '0';
 			}
 
-			bitString += ',';
+			if (currentBit == 0x01) {
+				currentBit = 0x80;
+				currentByte++;
+			} else {
+				currentBit >>= 1;
+			}
 		}
 
 		return bitString;
