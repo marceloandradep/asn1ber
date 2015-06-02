@@ -3,7 +3,7 @@
 const
 	fs = require('fs'),
 	log = require('bunyan').createLogger({ name: 'decoder-test' }),
-	Decoder = require('../decoder/decoder');
+	Decoder = require('../index').Decoder;
 
 fs.readFile("response-node.txt", function(err, data) {
 	if (err) {

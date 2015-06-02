@@ -1,7 +1,7 @@
 'use strict';
 
 const
-	Decoder = require('../decoder/decoder'),
+	Decoder = require('../index').Decoder,
 	bitstring = require('../algorithms/bitstring');
 
 let 
