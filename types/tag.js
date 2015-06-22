@@ -42,4 +42,25 @@ function Tag(identifierOctet, lengthOctet, length, offset, value) {
 	}
 };
 
+Tag.prototype.matches = function(tagNumber, tagForm, tagClass) {
+	if (tagNumber < 0) {
+		throw new TypeError('You must provide a valid tagNumber.');
+	}
+
+	let
+		matchesNumber, matchesForm = true, matchesClass = true;
+
+	matchesNumber = tagNumber === this.tagNumber;
+
+	if (tagForm) {
+		matchesForm = tagForm === this.tagForm;
+	}
+
+	if (tagClass) {
+		matchesClass = tagClass === this.tagClass;
+	}
+
+	return matchesNumber && matchesForm && matchesClass;
+}
+
 module.exports = Tag;

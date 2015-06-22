@@ -1,8 +1,10 @@
 'use strict';
 
 const
-	Decoder = require('./decoder/decoder');
+	Decoder = require('./decoder/decoder'),
+	consts = require('./types/constants');
 
 module.exports = {
-	Decoder: Decoder
+	Decoder: Decoder,
+	types: consts
 };

@@ -4,8 +4,7 @@ exports.decode = function(bytes) {
 	let 
 		time = bytes.toString('ascii'),
 		year, month, day,
-		hours, minutes, seconds, milis, timezone,
-		timeStr;
+		hours, minutes, seconds, milis, timezone;
 
 	year = time.slice(0, 4);
 	month = time.slice(4, 6)
@@ -30,23 +29,17 @@ exports.decode = function(bytes) {
 		}
 	}
 
-	timeStr = year + '-' + month + '-' + day + ' ' + hours;
-
-	if (minutes) {
-		timeStr += ':' + minutes;
+	if (!minutes) {
+		minutes = 0;
 	}
 
-	if (seconds) {
-		timeStr += ':' + seconds;
+	if (!seconds) {
+		seconds = 0;
 	}
 
-	if (milis) {
-		timeStr += milis;
+	if (!milis) {
+		milis = 0;
 	}
 
-	if (timezone) {
-		timeStr += ' ' + timezone;
-	}
-
-	return timeStr;
+	return new Date(year, month, day, hours, minutes, seconds, milis);
 };
